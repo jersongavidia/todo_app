@@ -1,8 +1,9 @@
 package com.backend.puntoxpress.controller;
 
-import com.backend.puntoxpress.entity.Task;
-import com.backend.puntoxpress.repository.TaskRepository;
+import com.backend.puntoxpress.Dto.TaskDTO;
 import com.backend.puntoxpress.service.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -10,35 +11,37 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
-    private final TaskService taskService;
+    @Autowired
+    TaskService taskService;
 
-    public TaskController(TaskService taskService, TaskRepository taskRepository) {
-        this.taskService = taskService;
+    @GetMapping("/all")
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+        List<TaskDTO> tasks = taskService.getAllTasks();
+        return ResponseEntity.ok(tasks);
     }
 
-    @GetMapping("all")
-    public ResponseEntity<List<Task>> getAllTasks() {
-        return ResponseEntity.ok(taskService.getAllTasks());
-    }
     @GetMapping("/{userId}")
-    public ResponseEntity<List<Task>> getUserTasks(@PathVariable Long userId) {
-        return ResponseEntity.ok(taskService.getTasksByUserId(userId));
+    public ResponseEntity<List<TaskDTO>> getUserTasks(@PathVariable Long userId) {
+        List<TaskDTO> userTasks = taskService.getTasksByUserId(userId);
+        return ResponseEntity.ok(userTasks);
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        return ResponseEntity.ok(taskService.createTask(task));
+    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO) {
+        TaskDTO createdTask = taskService.createTask(taskDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task) {
-        task.setId(id);
-        return ResponseEntity.ok(taskService.updateTask(task));
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+        TaskDTO updatedTask = taskService.updateTask(id, taskDTO);
+        return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-        taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+        taskService.deleteTask(id);  // The exception will be handled automatically by Spring
+        return ResponseEntity.noContent().build();  // 204 No Content if successful
     }
+
 }
