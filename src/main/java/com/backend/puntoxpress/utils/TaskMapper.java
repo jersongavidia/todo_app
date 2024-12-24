@@ -2,6 +2,7 @@ package com.backend.puntoxpress.utils;
 
 import com.backend.puntoxpress.Dto.TaskDTO;
 import com.backend.puntoxpress.entity.Task;
+import com.backend.puntoxpress.entity.User;
 
 public class TaskMapper {
     public static TaskDTO toTaskDTO(Task task) {
@@ -21,7 +22,15 @@ public class TaskMapper {
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setCompleted(taskDTO.getCompleted());
-        // Additional fields can be mapped here if needed
+        if (taskDTO.getCreatedAt() != null) {
+            task.setCreatedAt(taskDTO.getCreatedAt());
+        }
+        task.setUpdatedAt(taskDTO.getUpdatedAt());
+
+        // Assume userId is passed in the DTO to associate a user
+            User user = new User();
+        user.setId(taskDTO.getUserId());
+        task.setUser(user);
         return task;
     }
 }

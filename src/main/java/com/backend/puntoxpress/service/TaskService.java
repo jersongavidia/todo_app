@@ -4,6 +4,7 @@ import com.backend.puntoxpress.Dto.TaskDTO;
 import com.backend.puntoxpress.entity.Task;
 import com.backend.puntoxpress.entity.User;
 import com.backend.puntoxpress.exception.TaskNotFoundException;
+import com.backend.puntoxpress.exception.UserNotFoundException;
 import com.backend.puntoxpress.repository.TaskRepository;
 import com.backend.puntoxpress.repository.UserRepository;
 import com.backend.puntoxpress.utils.TaskMapper;
@@ -36,7 +37,7 @@ public class TaskService implements Serializable {
     public TaskDTO createTask(TaskDTO taskDTO) {
         // Fetch the User entity by userId from the TaskDTO
         User user = userRepository.findById(taskDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
         // Convert TaskDTO to Task entity
         Task task = TaskMapper.toTaskEntity(taskDTO);
         // Set the User entity to the task
@@ -49,13 +50,13 @@ public class TaskService implements Serializable {
     public TaskDTO updateTask(Long id, TaskDTO taskDTO) {
         // Fetch the existing task by ID
         Task existingTask = taskRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
 
         // If userId is provided in the DTO, fetch the User entity
         if (taskDTO.getUserId() != null) {
             // Fetch the User entity by userId
             User user = userRepository.findById(taskDTO.getUserId())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new UserNotFoundException("User not found"));
 
             // Set the User entity to the existing task
             existingTask.setUser(user);
