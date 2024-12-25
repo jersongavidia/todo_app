@@ -76,7 +76,7 @@ public class TaskService implements Serializable {
     public void deleteTask(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with ID: " + taskId));
-        if (!userRepository.findById(task.getUser().getId()).isPresent()) {
+        if (userRepository.findById(task.getUser().getId()).isEmpty()) {
             throw new UserNotFoundException("User not found with ID: " + task.getUser().getId());
         }
         taskRepository.deleteById(taskId);
