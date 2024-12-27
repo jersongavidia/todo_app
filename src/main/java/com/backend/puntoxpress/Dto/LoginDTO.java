@@ -3,9 +3,7 @@ package com.backend.puntoxpress.Dto;
 import lombok.Data;
 
 @Data
-public class UserDTO {
-    private Long id;
+public class LoginDTO {
     private String username;
-    private String email;
     private String password;
 }
