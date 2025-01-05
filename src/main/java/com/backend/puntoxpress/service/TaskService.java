@@ -1,6 +1,7 @@
 package com.backend.puntoxpress.service;
 
 import com.backend.puntoxpress.Dto.TaskDTO;
+
 import com.backend.puntoxpress.entity.Task;
 import com.backend.puntoxpress.entity.User;
 import com.backend.puntoxpress.exception.TaskNotFoundException;
@@ -10,6 +11,8 @@ import com.backend.puntoxpress.repository.UserRepository;
 import com.backend.puntoxpress.utils.TaskMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+//import org.springframework.security.test.context.support.WithMockUser;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,7 +31,7 @@ public class TaskService implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public List<TaskDTO> getTasksByUserId(Long userId) {
+    public List<TaskDTO> getTasksByUserId(@RequestBody Long userId) {
         return taskRepository.findByUserId(userId).stream()
                 .map(TaskMapper::toTaskDTO) // Use TaskMapper for conversion
                 .collect(Collectors.toList());
