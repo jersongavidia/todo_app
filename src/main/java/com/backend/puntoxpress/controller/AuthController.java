@@ -1,65 +1,53 @@
 package com.backend.puntoxpress.controller;
 
-import com.backend.puntoxpress.Dto.UserDTO;
+import com.backend.puntoxpress.Dto.LoginDTO;
+import com.backend.puntoxpress.Dto.RegisterDTO;
+import com.backend.puntoxpress.service.AuthService;
 import com.backend.puntoxpress.service.JwtTokenProviderService;
 import com.backend.puntoxpress.service.UserService;
 import com.backend.puntoxpress.utils.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
     @Autowired
     private JwtUtil jwtTokenUtil;
-
     @Autowired
     private UserService userService;
-
+    @Autowired
+    private AuthService authService;
     @Autowired
     private JwtTokenProviderService jwtTokenProviderService;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody Map<String, String> credentials) {
-        String username = credentials.get("username");
-        String password = credentials.get("password");
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password));
-        String token = jwtTokenProviderService.generateToken(username);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("username", username);
-        response.put("token", token);
-
-        return ResponseEntity.ok(response);
+    public ResponseEntity<TokenResponse> login(@RequestBody final LoginDTO loginCredentials) {
+        final TokenResponse tokenResponse = authService.loginUser(loginCredentials);
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
-        if (!userService.getUserByUsername(userDTO.getUsername())) {
-            userService.registerUser(userDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully: " + userDTO);
-        } else {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
-        }
+    public ResponseEntity<TokenResponse> register(@RequestBody final RegisterDTO registerDTO) {
+        final TokenResponse tokenResponse = authService.registerUser(registerDTO);
+        return ResponseEntity.ok(tokenResponse);
+        //ResponseEntity<Map<String, String>> response = userService.registerUser(userDTO);
+        //return (ResponseEntity<Map<String, String>>) userService.registerUser(userDTO);
+        //return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists.");
     }
 
+    @PostMapping("/refresh")
+    public TokenResponse refreshToken(@RequestHeader(HttpHeaders.AUTHORIZATION) final String authHeader){
+        return authService.refreshToken(authHeader);
+    }
 
 }
