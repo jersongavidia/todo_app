@@ -1,24 +1,5 @@
 package com.backend.puntoxpress.service;
 
-import com.backend.puntoxpress.Dto.TaskDTO;
-import com.backend.puntoxpress.entity.Task;
-import com.backend.puntoxpress.entity.User;
-import com.backend.puntoxpress.exception.TaskNotFoundException;
-import com.backend.puntoxpress.exception.UserNotFoundException;
-import com.backend.puntoxpress.repository.TaskRepository;
-import com.backend.puntoxpress.repository.UserRepository;
-import com.backend.puntoxpress.utils.TaskMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.*;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 //@SpringBootTest
 //public class TaskServiceTest {
 //

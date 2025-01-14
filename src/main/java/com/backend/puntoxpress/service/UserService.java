@@ -1,7 +1,7 @@
 package com.backend.puntoxpress.service;
 
-import com.backend.puntoxpress.Dto.UserDTO;
 import com.backend.puntoxpress.Dto.LoginDTO;
+import com.backend.puntoxpress.Dto.UserDTO;
 import com.backend.puntoxpress.controller.TokenResponse;
 import com.backend.puntoxpress.entity.Token;
 import com.backend.puntoxpress.entity.User;
@@ -12,25 +12,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private TokenRepository tokenRepository;
     @Autowired
-    //private BCryptPasswordEncoder passwordEncoder;
     private PasswordEncoder passwordEncoder;
     @Autowired
     private JwtTokenProviderService jwtTokenProviderService;
@@ -87,5 +85,17 @@ public class UserService {
 
     public TokenResponse refreshToken(String authHeader) {
         return null;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .authorities(new ArrayList<>()) // Add roles or authorities if needed
+                .build();
     }
 }
