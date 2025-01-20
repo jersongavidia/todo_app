@@ -30,12 +30,8 @@ public class UserService implements UserDetailsService {
     private TokenRepository tokenRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtTokenProviderService jwtTokenProviderService;
 
     private String jwtToken;
-    private String refreshToken;
-    private Token generatedToken;
 
     public Map<String, String> loginUser(LoginDTO loginDTO) {
         User user = userRepository.findByUsername(loginDTO.getUsername())
