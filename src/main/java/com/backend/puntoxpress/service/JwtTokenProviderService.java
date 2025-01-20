@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,8 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 
 @Service
+@Getter
+@Setter
 public class JwtTokenProviderService {
 
     @Value("${application.security.jwt.secret-key}")

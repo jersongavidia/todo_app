@@ -38,10 +38,4 @@ public class Task {
     public void setLastUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
-    // Getters and Setters
-    @PrePersist
-    public void setCreatedAt() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

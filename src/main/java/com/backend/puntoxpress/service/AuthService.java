@@ -9,7 +9,9 @@ import com.backend.puntoxpress.repository.TokenRepository;
 import com.backend.puntoxpress.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +25,20 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Getter
+@Setter
 @RequiredArgsConstructor
 public class AuthService {
     @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    private final TokenRepository tokenRepository;
+    private TokenRepository tokenRepository;
     @Autowired
-    private final PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Autowired
-    private final JwtService jwtService;
+    private JwtService jwtService;
     @Autowired
-    private final AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
     private final Logger logger = LoggerFactory.getLogger(AuthService.class);
 
     public TokenResponse registerUser(RegisterDTO registerDTO) {

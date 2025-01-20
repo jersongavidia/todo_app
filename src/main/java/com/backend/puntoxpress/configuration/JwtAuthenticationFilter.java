@@ -7,7 +7,6 @@ import com.backend.puntoxpress.repository.UserRepository;
 import com.backend.puntoxpress.service.AuthService;
 import com.backend.puntoxpress.service.CustomUserDetailsService;
 import com.backend.puntoxpress.service.JwtTokenProviderService;
-import com.backend.puntoxpress.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +20,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -33,10 +31,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtTokenProviderService jwtTokenProviderService;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    private final JwtTokenProviderService jwtTokenProviderService;
     @Autowired
     private AuthService authService;
     @Autowired
@@ -54,37 +49,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        if(request.getServletPath().contains("/auth")){
-            filterChain.doFilter(request,response);
+        if (request.getServletPath().contains("/auth")) {
+            filterChain.doFilter(request, response);
             return;
         }
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(authHeader == null || !authHeader.startsWith("Bearer ")){
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
         final String jwtToken = authHeader.substring(7);
         final String userEmail = jwtTokenProviderService.getUsernameFromToken(jwtToken);
-        if(userEmail == null || SecurityContextHolder.getContext().getAuthentication() != null){
+        if (userEmail == null || SecurityContextHolder.getContext().getAuthentication() != null) {
             return;
         }
         final Token token = tokenRepository.findByToken(jwtToken);
-        if(token==null || token.isExpired() || token.isRevoked()){
+        if (token == null || token.isExpired() || token.isRevoked()) {
             filterChain.doFilter(request, response);
             return;
         }
         final UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
         final Optional<User> user = userRepository.findByUsername(userDetails.getUsername());
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
         final boolean isTokenValid = authService.isTokenValid(jwtToken, user.get());
-        if(!isTokenValid){
+        if (!isTokenValid) {
             return;
         }
         final var authToken = new UsernamePasswordAuthenticationToken(
-          userDetails, null, userDetails.getAuthorities()
+                userDetails, null, userDetails.getAuthorities()
         );
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
